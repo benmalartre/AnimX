@@ -6,6 +6,15 @@
 
 static size_t KEYFRAME_SIZE = sizeof(adsk::Keyframe);
 
+#ifdef _WIN32
+	#ifdef ANIMX_STATIC_LIB
+		#define ANIMX_API extern "C"
+	#else
+#define ANIMX_API extern "C" __declspec(dllexport)
+	#endif
+#else
+	#define ANIMX_API extern "C"
+#endif
 
 bool AnimXCurve::keyframeAtIndex(int index, adsk::Keyframe &key) const
 {
@@ -90,13 +99,13 @@ bool AnimXCurve::isStatic() const
 	return false;
 }
 
-extern "C" __declspec(dllexport) AnimXCurve * __stdcall newCurve()
+ANIMX_API AnimXCurve * __stdcall newCurve()
 {
 	AnimXCurve* crv = new AnimXCurve;
 	return crv;
 }
 
-extern "C" __declspec(dllexport) void __stdcall deleteCurve(AnimXCurve* curve)
+ANIMX_API void __stdcall deleteCurve(AnimXCurve* curve)
 {
 	delete curve;
 }

@@ -1,11 +1,6 @@
 #ifndef _ANIMX_CAPI_H_
 #define _ANIMX_CAPI_H_
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
 #include <string>
 
 #include "animx.h"
@@ -13,18 +8,30 @@
 #include <memory>
 #include <stddef.h>
 
+#ifdef _WIN32
+#ifdef ANIMX_STATIC_LIB
+#define ANIMX_API extern "C"
+#else
+#define ANIMX_API extern "C" __declspec(dllexport)
+#endif
+#else
+#define ANIMX_API extern "C"
+#endif
+
 using namespace adsk;
 
 class AnimXCurve : ICurve
 {
 public:
 	AnimXCurve::AnimXCurve() :numKeys(0), keys(NULL){};
-	virtual __stdcall ~AnimXCurve(){};
+	virtual ~AnimXCurve(){};
 
-	virtual void __stdcall setNumKeys(unsigned n) { numKeys = n; };
-	virtual int __stdcall getNumKeys() { return numKeys; };
-	virtual void __stdcall setKeys(Keyframe* k){ keys = k; };
-	virtual Keyframe* __stdcall getKeys(){ return keys; };
+	virtual void setNumKeys(unsigned n) { numKeys = n; };
+	virtual int getNumKeys() { return numKeys; };
+	virtual void setKeys(Keyframe* k){ keys = k; };
+	virtual Keyframe* getKeys(){ return keys; };
+	virtual void setPreInfinityType(InfinityType t){ prit = t; };
+	virtual void setPostInfinityType(InfinityType t){ psit = t; };
 
 	bool keyframeAtIndex(int index, Keyframe &key) const override;
 
@@ -47,10 +54,12 @@ public:
 public:
 	unsigned numKeys;
 	Keyframe* keys;
+	InfinityType psit;
+	InfinityType prit;
 };
 
-extern "C" __declspec(dllexport) AnimXCurve * __stdcall newCurve();
-extern "C" __declspec(dllexport) void __stdcall deleteCurve(AnimXCurve * crv);
+ANIMX_API AnimXCurve * newCurve();
+ANIMX_API void deleteCurve(AnimXCurve * crv);
 
 #endif
 

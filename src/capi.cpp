@@ -6,16 +6,6 @@
 
 static size_t KEYFRAME_SIZE = sizeof(adsk::Keyframe);
 
-#ifdef _WIN32
-	#ifdef ANIMX_STATIC_LIB
-		#define ANIMX_API extern "C"
-	#else
-#define ANIMX_API extern "C" __declspec(dllexport)
-	#endif
-#else
-	#define ANIMX_API extern "C"
-#endif
-
 bool AnimXCurve::keyframeAtIndex(int index, adsk::Keyframe &key) const
 {
 	if (numKeys && index >= 0 && index < (int)numKeys)
@@ -76,12 +66,12 @@ bool AnimXCurve::last(Keyframe &key) const
 
 InfinityType AnimXCurve::preInfinityType() const
 {
-	return adsk::InfinityType::Linear;
+	return prit;
 }
 
 InfinityType AnimXCurve::postInfinityType() const
 {
-	return adsk::InfinityType::Linear;
+	return psit;
 }
 
 bool AnimXCurve::isWeighted()const
@@ -99,13 +89,13 @@ bool AnimXCurve::isStatic() const
 	return false;
 }
 
-ANIMX_API AnimXCurve * __stdcall newCurve()
+ANIMX_API AnimXCurve * newCurve()
 {
 	AnimXCurve* crv = new AnimXCurve;
 	return crv;
 }
 
-ANIMX_API void __stdcall deleteCurve(AnimXCurve* curve)
+ANIMX_API void deleteCurve(AnimXCurve* curve)
 {
 	delete curve;
 }
